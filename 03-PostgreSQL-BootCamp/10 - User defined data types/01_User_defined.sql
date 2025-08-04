@@ -214,20 +214,24 @@ insert into cron_jobs (cron_job_id) values (3, 'approved');
 select * from cron_jobs;
 
 -- create type if not exists
-do
+DO
 $$
-begin 
-	if not exists ( select *
-						from pg_type typ
-							inner join pg_namespace nsp
-								on nsp.oid = typ.typnamespace	
-						where nsp.nspname = current schema()
-							and typ.typname = 'ai') then
-		create type ai
-					as (a text,
-						i integer);
-	end if;
-end;
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type typ
+        INNER JOIN pg_namespace nsp ON nsp.oid = typ.typnamespace
+        WHERE nsp.nspname = current_schema
+          AND typ.typname = 'ai'
+    ) THEN
+        EXECUTE 'CREATE TYPE ai AS (
+            a TEXT,
+            i INTEGER
+        )';
+    END IF;
+END;
+$$
+LANGUAGE plpgsql;
 
 
 
