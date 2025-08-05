@@ -91,11 +91,15 @@ from pg_class
 where 
 relkind = 'S';
 
+<<<<<<< HEAD
 -- share one sequence between two tables
+=======
+>>>>>>> b22d8ed50172ec41ca1ae8b40cd4d903f2d38ca9
 create sequence common_fruits_seq start with 100
 
 create table apples (
 	fruit_id int default nextval('common_fruits_seq') not null,
+<<<<<<< HEAD
 	fruit_name varchar(50)
 );
 
@@ -134,6 +138,33 @@ alter sequence table_seq owned by contacts.contact_id
 insert into contacts (contact_name) values ('Priyam');
 
 select * from contacts;
+=======
+	fruit_name
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+>>>>>>> b22d8ed50172ec41ca1ae8b40cd4d903f2d38ca9
 
 
 
