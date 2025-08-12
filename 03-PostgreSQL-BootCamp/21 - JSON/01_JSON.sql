@@ -204,7 +204,7 @@ select row_to_json(a) from (
 
 select * from directors_docs;
 
--- Json values in json documents
+-- Null values in json documents
 select * from directors_docs;
 
 select jsonb_array_elements(body->'all_movies') from directors_docs
@@ -236,3 +236,98 @@ select row_to_json(a) from (
 )as a
 
 select jsonb_array_elements(body->'all_movies') from directors_docs
+
+-- Getting info from JSON docs
+-- Count total movies for each director
+select 
+	*,
+	jsonb_array_elements(body->'all_movies') as total_movies
+from directors_docs
+order by jsonb_array_elements(body->'all_movies') desc;
+
+-- List all keys within each JSON row
+select 
+	*,
+	jsonb_object_keys(body)
+from directors_docs
+
+-- key/value style output
+select
+	j.key,
+	j.value
+from directors_docs, jsonb_each(directors_docs.body) j
+
+-- Turning JSON into table format
+select
+	j.*
+from directors_docs, jsonb_to_record(directors_docs.body) j (
+	director_id int,
+	first_name varchar(255),
+	nationality varchar(100)
+);
+
+-- Existence Operator -> ?
+-- find all first name equal to 'John'
+select 
+*
+from 
+directors_docs
+where body->'first_name' ? 'John';
+
+select 
+*
+from 
+directors_docs
+where body ? 'John';
+
+-- Find all records with director id 1
+select 
+*
+from 
+directors_docs
+where body->'director_id' ? '1';
+
+-- Containment Operator -> @>
+-- find all first name equal to 'John'
+select 
+*
+from 
+directors_docs
+where body @> '{"first_name":"John"}';
+
+-- Find all records with director id 1
+select 
+*
+from 
+directors_docs
+where body@> '{"director_id":1}';
+
+-- Find record for the movie "Toy Story"
+select 
+*
+from 
+directors_docs
+where body->'all_movies' @> '[{"movie_name":"Toy Story"}]'
+
+-- Mix and match JSON search
+-- Find all records where first name starts with 'J'
+explain select 
+*
+from 
+directors_docs
+where body->>'first_name' like 'J%';
+
+-- Find all records where director id > 2
+select 
+*
+from 
+directors_docs
+where (body->>'director_id')::integer>2
+
+-- Indexing on JSONB
+-- Find all records where director id in 1,2,3,4,5 and 10
+select 
+*
+from 
+directors_docs
+where (body->>'director_id')::integer in (1,2,3,4,5,10);
