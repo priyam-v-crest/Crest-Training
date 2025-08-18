@@ -197,3 +197,190 @@ with check option
 insert into v_cities_us(country_code, city_name) values
 ('UK','Leeds');
 
+-- Updatable views using WITH LOCAL and CASCADED 
+create or replace view v_cities_c as 
+select
+	country_id,
+	country_code,
+	city_name
+from countries
+where city_name like 'C%'
+
+select * from v_cities_c;
+
+create or replace view v_cities_c_us as 
+select
+	country_id,
+	country_code,
+	city_name
+from v_cities_c
+where country_code = 'US'
+with local check option;
+
+insert into v_cities_c_us(country_code, city_name) values
+('US','Connecticut');
+
+select * from v_cities_c_us;
+
+create or replace view v_cities_c_us as 
+select
+	country_id,
+	country_code,
+	city_name
+from v_cities_c
+where country_code = 'US'
+with cascaded check option;
+
+insert into v_cities_c_us(country_code, city_name) values
+('US','Boston');
+
+insert into v_cities_c_us(country_code, city_name) values
+('US','Clearwater');
+
+-- Creating a materialized view
+create materialized view if not exists mv_directors as
+select
+	first_name,
+	last_name
+from directors
+with data;
+
+select * from mv_directors;
+
+create materialized view if not exists mv_directors_no_data as
+select
+	first_name,
+	last_name
+from directors
+with no data;
+
+select * from mv_directors_no_data;
+
+refresh materialized view mv_directors_no_data;
+
+-- Drop materialized view
+drop materialized view mv_director2
+
+-- Changing materialized view data
+select * from mv_directors;
+
+insert into directors (first_name) values ('dir1'),('dir2');
+
+refresh materialized view mv_directors;
+
+delete from mv_directors
+where first_name='dir1';
+
+update mv_directors set first_name = 'ddir1'
+where first_name = 'dir1';
+
+-- Check if materialized view is populated or not
+create materialized view mv_directors2 as
+select
+	first_name
+from directors
+with no data;
+
+select * from mv_directors2;
+
+select relispopulated from pg_class where relname = 'mv_directors2';
+
+-- Refreshing data in materialized views
+create materialized view mv_directors_us as
+select
+	director_id,
+	first_name,
+	last_name,
+	date_of_birth,
+	nationality
+from directors
+where nationality = 'American'
+with no data;
+
+select * from mv_directors_us;
+
+refresh materialized view mv_directors_us;
+
+select * from mv_directors_us;
+
+create unique index idx_u_mv_directors_us_director_id on mv_directors_us(director_id);
+
+select * from mv_directors_us;
+
+-- Using materialized view for website page clicks analytics
+create table page_clicks(
+	rec_id serial primary key,
+	page varchar(200),
+	click_time timestamp,
+	user_id bigint
+);
+
+insert into page_clicks(page, click_time, user_id)
+select
+(
+	case(random() *2)::int
+		when 0 then 'klickanalytics.com'
+		when 1 then 'clickapis.com'
+		when 2 then 'google.com'
+	end
+) as page,
+now() as click_time,
+(floor(random() * (111111111 - 1000000 + 1)+1000000))::int as user_id
+from generate_series(1,10000) seq;
+
+select * from page_clicks;
+
+-- For daily trend analysis
+create materialized view mv_page_clicks as 
+select 
+	date_trunc('day', click_time) as day,
+	page,
+	count(*) as total_clicks
+from page_clicks
+group by day, page;
+
+refresh materialized view mv_page_clicks;
+
+create materialized view mv_page_clicks_daily as 
+select 
+	click_time as day,
+	page,
+	count(*) as cnt
+from page_clicks
+where 
+	click_time>=date_trunc('day',now())
+	and click_time<timestamp 'tomorrow'
+group by day, page;
+
+refresh materialized view mv_page_clicks;
+
+create unique index idx_mv_page_clicks_daily_day_page on mv_page_clicks_daily(day, page);
+
+select * from mv_page_clicks_daily;
+
+-- List all materialized views
+select oid::regclass::text
+from pg_class
+where relkind = 'm'
+order by 1;
+
+-- list materialized views with no unique indexes
+with matviews_with_no_unique_keys as(
+	select c.oid, c.relname, c2.relname as idx_name
+	from pg_catalog.pg_class c, pg_catalog.pg_class c2, pg_catalog.pg_index i
+	left join pg_catalog.pg_constraint con 
+	on (
+		conrelid = i.indrelid and conindid = i.indexrelid and contype in ('p','u')
+	)
+	where 
+	c.relkind = 'm'
+	and c.oid = i.indrelid
+	and i.indexrelid = c2.oid
+	and indisunique
+)
+select c.relname as materialized_view_name
+from pg_class c
+where c.relkind = 'm'
+except
+select mwk.relname
+from matviews_with_no_unique_keys as mwk;
