@@ -126,4 +126,45 @@ STEP 15: Error Handling & Validation Rules
 STEP 16: Documentation & Testing
 	Documentation Format: OpenAPI/Swagger 3.0 specification
 	Tools for testing: Postman, Swagger UI
-	Examples of requests and responses should be provided for each endpoint		
+	Examples of requests and responses should be provided for each endpoint	
+GET /api/courses:
+[
+{
+"courseId": 1,
+"courseName": "B.Tech",
+"courseDuration": 4,
+"courseType": "Full-time"
+}
+]
+GET /api/courses/{courseId}:
+{
+"courseId": 1,
+"courseName": "B.Tech",
+"courseDuration": 4,
+"courseType": "Full-time"
+}
+
+STEP 17: Error Handling
+400 BAD REQUEST:
+{
+"error": {
+"code": "INVALID_INPUT",
+"message": "One or more input arguments are invalid",
+"target": "Course",
+"details": [
+{ "code": "MISSING_FIELD", "target": "courseName", "message": "Course name is required" }
+]
+}
+}
+
+STEP 18–20: Filtering, Pagination, Sorting
+Filtering: GET /api/courses?courseType=Full-time
+Pagination: GET /api/courses?page=1&size;=20
+Sorting: GET /api/courses?sortBy=courseName	
+
+STEP 21: API Versioning
+Scheme: URL Versioning
+Version: 1.0
+/api/v1/courses
+/api/v1/courses/{courseId}
+/api/v1/courses/{courseId}/students
