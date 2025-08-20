@@ -84,3 +84,73 @@ STEP 12: Finalize the API Specification
     - Provide request/response schemas
     - Include authentication details
     - Add error response samples
+
+STEP 13: Request Body
+POST /api/students:
+{
+"firstName": "John",
+"lastName": "Doe",
+"phoneNumber": "1234567890",
+"address": "New York"
+}
+PUT /api/students/{studentId}:
+{
+"firstName": "John",
+"lastName": "Smith",
+"phoneNumber": "9876543210",
+"address": "California"
+}
+
+STEP 14: Status Codes
+GET → 200 OK
+POST → 201 CREATED, 400 BAD REQUEST
+GET by ID → 200 OK, 404 NOT FOUND
+PUT → 200 OK, 404 NOT FOUND
+DELETE → 204 NO CONTENT, 404 NOT FOUND
+
+STEP 15: Response Content-Type
+application/json
+
+STEP 16: Response Body
+GET /api/students:
+[
+{
+"studentId": 1,
+"firstName": "John",
+"lastName": "Doe",
+"phoneNumber": "1234567890",
+"address": "New York"
+}
+]
+GET /api/students/{studentId}:
+{
+"studentId": 1,
+"firstName": "John",
+"lastName": "Doe",
+"phoneNumber": "1234567890",
+"address": "New York"
+}
+
+STEP 17: Error Handling
+400 BAD REQUEST:
+{
+"error": {
+"code": "INVALID_INPUT",
+"message": "One or more input arguments are invalid",
+"target": "Student",
+"details": [
+{ "code": "MISSING_FIELD", "target": "firstName", "message": "First name is required" }
+]
+}
+}
+
+STEP 18–20: Filtering, Pagination, Sorting
+Filtering: GET /api/students?lastName=Smith
+Pagination: GET /api/students?page=1&size;=20
+Sorting: GET /api/students?sortBy=lastName
+
+STEP 21: API Versioning
+Scheme: URL Versioning
+Version: 1.0
+/api/v1/students
+/api/v1/students/{studentId}
