@@ -1,0 +1,14 @@
+| Command           | What It Does                                  | Example                    |
+| ----------------- | --------------------------------------------- | -------------------------- |
+| `cd`              | Change directory (folder)                     | `cd C:\Projects`           |
+| `dir`             | List files in current directory               | `dir`                      |
+| `mkdir`           | Make a new directory                          | `mkdir new-folder`         |
+| `rmdir` / `rm -r` | Remove a directory (empty or recursive)       | `rmdir old-folder`         |
+| `del`             | Delete a file                                 | `del file.txt`             |
+| `cls`             | Clear screen                                  | `cls`                      |
+| `copy`            | Copy files                                    | `copy file.txt backup.txt` |
+| `move`            | Move/rename files                             | `move file.txt folder\`    |
+| `type`            | Show file content                             | `type file.txt`            |
+| `exit`            | Close terminal                                | `exit`                     |
+| `start .`         | Open current folder in File Explorer          | `start .`                  |
+| `code .`          | Open current folder in VS Code (if installed) | `code .`                   |
