@@ -1,0 +1,16 @@
+| Command                      | What It Does                      | Example                                      |
+| ---------------------------- | --------------------------------- | -------------------------------------------- |
+| `git init`                   | Create a new git repo in folder   | `git init`                                   |
+| `git clone URL`              | Download a remote repo            | `git clone https://github.com/user/repo.git` |
+| `git status`                 | See changes                       | `git status`                                 |
+| `git add .`                  | Stage all changes                 | `git add .`                                  |
+| `git commit -m "msg"`        | Save changes with message         | `git commit -m "Initial commit"`             |
+| `git push origin main`       | Upload commits                    | `git push origin main`                       |
+| `git pull origin main`       | Download latest changes           | `git pull origin main`                       |
+| `git branch`                 | List branches                     | `git branch`                                 |
+| `git checkout branch`        | Switch branches                   | `git checkout feature-branch`                |
+| `git checkout -b new-branch` | Create & switch branch            | `git checkout -b dev`                        |
+| `git merge branch`           | Merge another branch into current | `git merge dev`                              |
+| `git log --oneline`          | View commit history (short)       | `git log --oneline`                          |
+| `git remote -v`              | Show connected remotes            | `git remote -v`                              |
+| `git reset --hard HEAD`      | Undo changes to last commit       | `git reset --hard HEAD`                      |
